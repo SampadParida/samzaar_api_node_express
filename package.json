@@ -1,0 +1,23 @@
+{
+  "type": "module",
+  "name": "samzaar_api",
+  "version": "1.0.0",
+  "description": "Api support backend app",
+  "main": "index.mjs",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "sampad",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.2",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.1.0",
+    "nanoid": "^5.0.4",
+    "razorpay": "^2.9.2",
+    "twilio": "^4.20.1"
+  }
+}
