@@ -2,9 +2,9 @@ import Product from '../models/product.js'
 
 
 const getProducts = async (req, res) => {
-    await Product.find({})
+    await Product.find({}, {__v:0})
         .then(found => {
-            return res.send(found);
+            return res.json(found);
         })
         .catch(err => {
             return res.status(500).send(err);
