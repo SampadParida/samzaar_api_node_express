@@ -1,25 +1,26 @@
+import { mongoose } from "mongoose";
 import Cart from '../models/cart.js'
 
 const getCartDetails = async (req, res) => {
     try {
         // CHECK IF USER HAS EXISTING CART DOCUMENT WITH STATUS NOT COMPLETED
-        let cart = await Cart.findOne({ user_id: req.user_id, status: 'CREATED' });
+        let cart = await Cart.findOne({ user_id: req.user_id, status: 'CREATED' }).populate('products.product_id').exec();
         return res.status('200').json({ "cart": cart });
     } catch (e) {
         return res.status('500').json({ "error": e });
     }
 };
 
-const addToCart = async (req, res) => {
+const updateCart = async (req, res) => {
     try {
         let resp = res;
         // CHECK IF USER HAS EXISTING CART DOCUMENT WITH STATUS NOT COMPLETED
-        let cart = await Cart.findOne({ user_id: rq.user_id, status: 'CREATED' });
+        let cart = await Cart.findOne({ user_id: req.user_id, status: 'CREATED' });
         // IF CART DOCUMENT EXISTS WITH STATUS CREATED
         if (cart) {
             // CHECK IF PRODUCT EXISTS IN CART
             const existingProduct = cart.products.find(product => product.product_id == req.body.product_id);
-            if (!existingProduct) {
+            if (!existingProduct && req?.body?.action == 'add') {
                 cart = await Cart.updateOne(
                     { user_id: req.user_id, status: 'CREATED' },
                     {
@@ -34,21 +35,42 @@ const addToCart = async (req, res) => {
                 )
             } else {
                 // UPDATE THE EXISTING PRODUCT QUANTITY AND AMOUNT
-                cart = await Cart.updateOne(
-                    { user_id: tokendata.user_id, status: 'CREATED', 'products.product_id': req.body.product_id },
-                    {
-                        $set: {
-                            'products.$.quantity': existingProduct.quantity + Number(req.body.quantity),
-                            'products.$.amount': existingProduct.amount + Number(req.body.amount),
-                        }
+                if (existingProduct.quantity > 0) {
+                    let finalQuantity = existingProduct.quantity + Number(req?.body.quantity);
+                    let finalAmount = existingProduct.amount + Number(req?.body.amount);
+                    if (req?.body?.action === 'remove') {
+                        finalAmount = existingProduct.amount - Number(req?.body.amount);
+                        finalQuantity = existingProduct.quantity - Number(req?.body.quantity)
                     }
-                )
+                    cart = await Cart.updateOne(
+                        { user_id: req.user_id, status: 'CREATED', 'products.product_id': req.body.product_id },
+                        {
+                            $set: {
+                                'products.$.quantity': finalQuantity,
+                                'products.$.amount': finalAmount,
+                            }
+                        }
+                    )
+                } else {
+                    if(existingProduct){
+                        cart = await Cart.updateOne(
+                            { user_id: req.user_id, status: 'CREATED' },
+                            {
+                                $pull: {
+                                    products: {
+                                        product_id: req.body.product_id
+                                    }
+                                },
+                            }
+                        )
+                    }             
+                }
             }
             resp.status('200')
         } else {
             // IF NOT EXISTS THEN CREATE A NEW CART DOCUMENT
             const newCart = await new Cart({
-                user_id: tokendata.user_id,
+                user_id: req.user_id,
                 status: 'CREATED',
                 products: [
                     {
@@ -73,5 +95,5 @@ const addToCart = async (req, res) => {
 };
 
 export {
-    getCartDetails, addToCart
+    getCartDetails, updateCart
 };

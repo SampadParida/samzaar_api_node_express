@@ -1,17 +1,19 @@
 import { mongoose } from "mongoose";
+import Product from "./product.js";
+import User from "./user.js";
 
 
 const cartSchema = new mongoose.Schema({
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'users'
+        ref: 'User'
     },
     products: [{
         product_id:{
             type: mongoose.Schema.Types.ObjectId,
             required: true,
-            ref: 'products'
+            ref: 'Product'
         },
         quantity: Number,
         amount: Number,
