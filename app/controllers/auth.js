@@ -28,7 +28,7 @@ const signUp = async (req, res) => {
             return res.send({ message: "Successfully Registered!", token: token })
         }
     } catch(err){
-        return res.send(`'Could not create an entry! = ${err}`)
+        return res.status(400).json({'message' : `Could not create an entry! = ${err}`})
     }
 };
 

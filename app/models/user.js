@@ -21,8 +21,10 @@ const userSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
-        required: true
-    }
+        required: false
+    },
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now }
 });
 userSchema.pre('save', async function (next) {
     const user = this;
