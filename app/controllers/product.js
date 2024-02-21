@@ -2,7 +2,8 @@ import Product from '../models/product.js'
 
 
 const getProducts = async (req, res) => {
-    await Product.find({}, {__v:0})
+    const query = req.query.category && req.query.category != 'all' ? { category : req.query.category } : {};
+    await Product.find(query, {__v:0})
         .then(found => {
             return res.json(found);
         })
@@ -12,7 +13,6 @@ const getProducts = async (req, res) => {
 };
 
 const getProductDetails = async (req, res) => {
-    console.log('============================================= ', req.params._id)
     await Product.findOne({_id:req.params.id})
         .then(found => {
             return res.send(found);
@@ -35,11 +35,15 @@ const addProduct = async (req, res) => {
     if(!req.body.price){
         return res.status(400).send('Product price missing.')
     }
+    if(!req.body.category){
+        return res.status(400).send('Product category missing.')
+    }
     const newProduct = new Product({
         title: req.body.title,
         description: req.body.description,
         image: req.body.image,
-        price: req.body.price
+        price: req.body.price,
+        category: req.body.category
     })
     await newProduct
         .save()

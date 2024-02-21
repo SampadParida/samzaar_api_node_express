@@ -22,7 +22,10 @@ const signUp = async (req, res) => {
                 is_verified: false
             });
             await newUser.save();
-            return res.status(201).json({entry})
+            let token = makeJwtToken({
+                email: newUser.email, name: newUser.name, user_id: newUser._id
+            })
+            return res.send({ message: "Successfully Registered!", token: token })
         }
     } catch(err){
         return res.send(`'Could not create an entry! = ${err}`)

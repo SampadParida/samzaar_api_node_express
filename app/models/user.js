@@ -3,11 +3,26 @@ import { mongoose } from "mongoose";
 import bcrypt from 'bcrypt';
 
 const userSchema = new mongoose.Schema({
-    name: String,
-    email: String,
-    password: String,
-    is_verified: Boolean,
-    phone: Number
+    name: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    is_verified: {
+        type: Boolean,
+        required: true
+    },
+    phone: {
+        type: String,
+        required: true
+    }
 });
 userSchema.pre('save', async function (next) {
     const user = this;

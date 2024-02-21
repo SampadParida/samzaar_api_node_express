@@ -7,13 +7,34 @@ const addressSchema = new mongoose.Schema({
         required: true,
         ref: 'users' // Reference to the User collection
     },
-    state: String,
-    city: String,
-    address: String,
-    landmark: String,
-    phone: String,
-    pincode: String,
-    isSelected: Boolean,
+    state: {
+        type: String,
+        required: true
+    },
+    city: {
+        type: String,
+        required: true
+    },
+    address: {
+        type: String,
+        required: true
+    },
+    landmark: {
+        type: String,
+        required: true
+    },
+    phone: {
+        type: String,
+        required: true
+    },
+    pincode: {
+        type: String,
+        required: true
+    },
+    isSelected: {
+        type: Boolean,
+        required: true
+    },
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }
 });
