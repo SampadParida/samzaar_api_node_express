@@ -42,15 +42,29 @@ const updateCart = async (req, res) => {
                         finalAmount = existingProduct.amount - Number(req?.body.amount);
                         finalQuantity = existingProduct.quantity - Number(req?.body.quantity)
                     }
-                    cart = await Cart.updateOne(
-                        { user_id: req.user_id, status: 'CREATED', 'products.product_id': req.body.product_id },
-                        {
-                            $set: {
-                                'products.$.quantity': finalQuantity,
-                                'products.$.amount': finalAmount,
+                    if (finalQuantity === 0){
+                        cart = await Cart.updateOne(
+                            { user_id: req.user_id, status: 'CREATED' },
+                            {
+                                $pull: {
+                                    products: {
+                                        product_id: req.body.product_id
+                                    }
+                                },
                             }
-                        }
-                    )
+                        )
+                    } else {
+                        cart = await Cart.updateOne(
+                            { user_id: req.user_id, status: 'CREATED', 'products.product_id': req.body.product_id },
+                            {
+                                $set: {
+                                    'products.$.quantity': finalQuantity,
+                                    'products.$.amount': finalAmount,
+                                }
+                            }
+                        )
+                    }
+
                 } else {
                     if(existingProduct){
                         cart = await Cart.updateOne(
